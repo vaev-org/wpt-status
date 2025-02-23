@@ -9,7 +9,6 @@ on:
 jobs:
   wpt_job:
     runs-on: debian-latest
-    name: Run WPT compliance check
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
