@@ -8,7 +8,7 @@ const ctx = document.getElementById('myChart').getContext('2d');
 
 
 async function genReport() {
-    const data = await fetch("/logs/wpt.json")
+    const data = await fetch("/wpt.json")
     const dataPoints = JSON.parse(await data.text())
     initChart(dataPoints)
 }

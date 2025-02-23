@@ -11,6 +11,6 @@ jobs:
     name: Run WPT compliance check
     steps:
       - uses: actions/checkout@v2
-      - name: Run Shell Script
-        id: shell_script_run
-        run: bash ./health-check.sh
+      - name: Run WPT compliance check
+        id: wpt_run
+        run: python runWPT.py
