@@ -4,13 +4,21 @@ name: WPT compliance check
 on:
   schedule:
     - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   wpt_job:
-    runs-on: python:3.11-bookworm
+    runs-on: debian-latest
     name: Run WPT compliance check
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
       - name: Run WPT
         id: wpt_run
         run: python runWPT.py
