@@ -7,10 +7,10 @@ on:
 
 jobs:
   wpt_job:
-    runs-on: python:3.11-slim-bookworm
+    runs-on: python:3.11-bookworm
     name: Run WPT compliance check
     steps:
       - uses: actions/checkout@v2
-      - name: Run WPT compliance check
+      - name: Run WPT
         id: wpt_run
         run: python runWPT.py
