@@ -16,7 +16,7 @@ run(f"git clone {target_repository} paper-muncher")
 #install the target
 run("cd paper-muncher && ./ck tools setup") #cd ing because ck does not handle relative paths correctly
 run("cd paper-muncher && ./ck package install --mixins=release --prefix=$HOME/.local/opt/paper-muncher")
-run('echo "::add-path::$HOME/.local/opt/paper-muncher/bin"')
+run('export PATH=$PATH:~$HOME/.local/opt/paper-muncher/bin')
 
 #clone latest WPT repository
 run(f"git clone {wpt_repository} wpt")
