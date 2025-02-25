@@ -16,6 +16,7 @@ run(f"git clone {target_repository} paper-muncher")
 #install the target
 run("cd paper-muncher && ./ck tools setup") #cd ing because ck does not handle relative paths correctly
 run("cd paper-muncher && ./ck package install --mixins=release --prefix=$HOME/.local/opt/paper-muncher")
+run('echo "::add-path::$HOME/.local/opt/paper-muncher/bin"')
 
 #clone latest WPT repository
 run(f"git clone {wpt_repository} wpt")
@@ -26,7 +27,10 @@ run("./wpt/wpt make-hosts-file | sudo tee -a /etc/hosts")
 
 #run WPT
 print("Running WPT...")
-run("cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --include-file ../wpt-whitelist")
+try :
+    run("cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --include-file ../wpt-whitelist")
+except Exception: # broad exception because wpts are randomly raising errors for no reason
+    print("WPT failed")
 
 print("Processing the results...")
 #retreive last log
@@ -48,6 +52,6 @@ if commit:
     print("Commiting the results")
     run("git config --global user.name 'Zima b-lou'")
     run("git config --global user.email 'zima@carbonlab.dev'")
-    run("git add -A --force logs/")
+    run("git add -A --force wpt.json")
     run("git commit -am '🤖 [Automated] Update WPT compliance Check'")
     run("git push")
