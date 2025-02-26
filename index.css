@@ -8,13 +8,17 @@ body{
 
 .pageContainer {
     height: fit-content;
-    width: 97vw;
+    width: fit-content;
     background: #fff;
     border-radius: 1rem;
     padding: 1rem;
     box-sizing: border-box;
     filter: drop-shadow(1px 7px 20px #ddd);
-    max-width: 900px;
+    max-width: min(900px, 97vw);
+}
+
+img{
+    height: 12rem;
 }
 
 .headline {
@@ -45,6 +49,50 @@ img{
     border-radius: 0.3rem;
 }
 
-canvas{
-    max-height: 60svh;
+canvas {
+    width: 82% !important;
+    object-fit: contain;
+}
+
+.reportContainer {
+    margin: 1rem;
+}
+
+.inline{
+    display: flex;
+}
+
+#reports{
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    flex-direction: column;
+}
+
+.reportContainer h2{
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+}
+
+#reports a{
+    color: #000;
+    padding: 0;
+    background: none;
+    text-decoration: underline ;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    .pageContainer > .inline{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    canvas{
+        min-width: 300px;
+        min-height: 200px;
+    }
+
+    img{
+        height: 5rem;
+    }
 }

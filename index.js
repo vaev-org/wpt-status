@@ -1,27 +1,52 @@
 const maxDays = 30;
+let currentChart
 
+function changeReport(target) {
+    genReport(target)
+}
+window.changeReport = changeReport
 
+async function initNav(){
+    //TODO extract url
+    const navList = document.getElementById('reports');
+
+    const whitelist = await(await fetch('./wpt-whitelist')).text()
+
+    whitelist.split("\n").forEach((item) => {
+        if (item === "") return
+        const DomItem = document.createElement('div')
+        DomItem.classList.add('nav-item')
+        DomItem.innerHTML = `<a class="nav-link" href="#" onclick="changeReport('${item}')">${item}</a>`
+        navList.appendChild(DomItem)
+    })
+}
 
 // Get the canvas element and its context
 const ctx = document.getElementById('myChart').getContext('2d');
 
 
 
-async function genReport() {
-    const data = await fetch("./wpt.json")
+async function genReport(report) {
+    const data = await fetch(`./logs/${report.replaceAll('/','_')}.json`)
+    if (! data.ok){
+        alert("Report not available")
+        return
+    }
     const dataPoints = JSON.parse(await data.text())
     // mapping the list by date
     const dateMap = dataPoints.reduce((acc, item) => {
         acc[item.date] = item
         return acc
     }, {})
-    //converting the object to list
     const dateList = Object.values(dateMap)
-    console.log(dateList)
     initChart(dateList)
 }
 
 function initChart(points) {
+    if(currentChart){
+        currentChart.destroy()
+    }
+
     const data = {
         labels: points.map(item => item.date), // Extract labels
         datasets: [{
@@ -60,7 +85,7 @@ function initChart(points) {
     };
 
     // Create the chart
-    const myChart = new Chart(ctx, {
+    currentChart = new Chart(ctx, {
         type: 'line',
         data: data,
         options: {
@@ -97,5 +122,5 @@ function initChart(points) {
     });
 
 }
-
-genReport()
+initNav()
+genReport("wpt")

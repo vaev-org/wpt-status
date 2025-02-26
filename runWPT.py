@@ -38,7 +38,7 @@ res = json.loads(f.readline())
 f.close()
 #append it to ours
 
-fd = open("wpt.json", "r+")
+fd = open("logs/wpt.json", "r+")
 content = json.load(fd)
 content.append(res)
 

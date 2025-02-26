@@ -9,11 +9,18 @@
 <body>
 <div class="pageContainer">
     <div class="headline">
-        <img src="logo.webp" style="height: 12rem" alt="Vaev's original logotype">
+        <img src="logo.webp" alt="Vaev's original logotype">
         <p>You can find here the history of Vaev's WPT compliance.</p>
     </div>
-    <div id="reports" class="reportContainer"></div>
-    <canvas id="myChart" width="400" height="200"></canvas>
+    <div class="inline" style="width: 100%">
+        <div class="reportContainer">
+            <h2>List of available reports</h2>
+            <div id="reports">
+                <div class="nav-item"><a class="nav-link" href="#" onclick="changeReport('wpt')">summary</a></div>
+            </div>
+        </div>
+        <canvas id="myChart" width="430" height="212"></canvas>
+    </div>
     <div class="footer">
         <a href="">Homepage</a>
         <a href="https://github.com/odoo/paper-muncher">Main Repo</a>
