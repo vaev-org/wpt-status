@@ -14,6 +14,7 @@ body{
     padding: 1rem;
     box-sizing: border-box;
     filter: drop-shadow(1px 7px 20px #ddd);
+    max-width: 900px;
 }
 
 .headline {
@@ -42,4 +43,8 @@ a{
 img{
     height: 7rem;
     border-radius: 0.3rem;
+}
+
+canvas{
+    max-height: 60svh;
 }

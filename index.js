@@ -10,7 +10,15 @@ const ctx = document.getElementById('myChart').getContext('2d');
 async function genReport() {
     const data = await fetch("./wpt.json")
     const dataPoints = JSON.parse(await data.text())
-    initChart(dataPoints)
+    // mapping the list by date
+    const dateMap = dataPoints.reduce((acc, item) => {
+        acc[item.date] = item
+        return acc
+    }, {})
+    //converting the object to list
+    const dateList = Object.values(dateMap)
+    console.log(dateList)
+    initChart(dateList)
 }
 
 function initChart(points) {

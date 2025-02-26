@@ -27,7 +27,7 @@ run("./wpt/wpt make-hosts-file | sudo tee -a /etc/hosts")
 #run WPT
 print("Running WPT...")
 try :
-    run("export PATH=$PATH:~/opt/paper-muncher/bin && cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --include-file ../wpt-whitelist")
+    run("PATH=$PATH:$HOME/.local/opt/paper-muncher/bin && cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --include-file ../wpt-whitelist")
 except Exception: # broad exception because wpts are randomly raising errors for no reason
     print("WPT failed")
 
