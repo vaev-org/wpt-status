@@ -16,7 +16,6 @@ run(f"git clone {target_repository} paper-muncher")
 #install the target
 run("cd paper-muncher && ./ck tools setup") #cd ing because ck does not handle relative paths correctly
 run("cd paper-muncher && ./ck package install --mixins=release --prefix=$HOME/.local/opt/paper-muncher")
-run('export paper-muncher = $HOME/.local/opt/paper-muncher/bin')
 
 #clone latest WPT repository
 run(f"git clone {wpt_repository} wpt")
@@ -28,7 +27,7 @@ run("./wpt/wpt make-hosts-file | sudo tee -a /etc/hosts")
 #run WPT
 print("Running WPT...")
 try :
-    run("cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --include-file ../wpt-whitelist")
+    run("export PATH=$PATH:~/opt/paper-muncher/bin && cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --include-file ../wpt-whitelist")
 except Exception: # broad exception because wpts are randomly raising errors for no reason
     print("WPT failed")
 
