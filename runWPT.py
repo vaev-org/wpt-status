@@ -3,7 +3,7 @@ import json
 import datetime
 import os
 
-commit = True
+commit = False
 
 wpt_repository = "https://github.com/vaev-org/wpt.git"
 target_repository = "https://github.com/odoo/paper-muncher.git"
@@ -13,14 +13,14 @@ def run(command):
 
 print("Preparing the environment...")
 #clone latest target repository
-run(f"git clone {target_repository} paper-muncher")
+# run(f"git clone {target_repository} paper-muncher")
 
 #install the target
-run("cd paper-muncher && ./ck tools setup") #cd ing because ck does not handle relative paths correctly
-run("cd paper-muncher && ./ck package install --mixins=release --prefix=$HOME/.local/opt/paper-muncher")
+# run("cd paper-muncher && ./ck tools setup") #cd ing because ck does not handle relative paths correctly
+# run("cd paper-muncher && ./ck package install --mixins=release --prefix=$HOME/.local/opt/paper-muncher")
 
 #clone latest WPT repository
-run(f"git clone {wpt_repository} wpt")
+# run(f"git clone {wpt_repository} wpt")
 
 #generate WPT hosts
 run("./wpt/wpt make-hosts-file | sudo tee -a /etc/hosts")
@@ -38,8 +38,9 @@ print("Processing the results...")
 
 def loadWhiteList():
     f = open("./wpt-whitelist", "r")
-    whitelist = f.readline()
+    whitelist = f.read()
     f.close()
+    print(f"WHITE: {whitelist}")
     whitelist = whitelist.strip().split("\n")
     for i in range(len(whitelist)):
         whitelist[i] = whitelist[i].strip('/')
