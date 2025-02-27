@@ -3,12 +3,17 @@ let currentChart
 
 function changeReport(target) {
     genReport(target)
+    const urlParams = new URLSearchParams(window.location.search)
+    urlParams.set('report', target)
+    window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`)
 }
 window.changeReport = changeReport
 
 async function initNav(){
-    //TODO extract url
-    const navList = document.getElementById('reports');
+    const urlParams = new URLSearchParams(window.location.search)
+    const report = urlParams.get('report')
+
+    const navList = document.getElementById('reports')
 
     const whitelist = await(await fetch('./wpt-whitelist')).text()
 
@@ -16,9 +21,15 @@ async function initNav(){
         if (item === "") return
         const DomItem = document.createElement('div')
         DomItem.classList.add('nav-item')
-        DomItem.innerHTML = `<a class="nav-link" href="#" onclick="changeReport('${item}')">${item}</a>`
+        DomItem.innerHTML = `<a class="nav-link" onclick="changeReport('${item}')">${item}</a>`
         navList.appendChild(DomItem)
     })
+
+    if (report){
+        return report
+    }else {
+        return "wpt"
+    }
 }
 
 // Get the canvas element and its context
@@ -122,5 +133,5 @@ function initChart(points) {
     });
 
 }
-initNav()
-genReport("wpt")
+const report = await initNav()
+genReport(report)
