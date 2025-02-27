@@ -87,9 +87,9 @@ canvas {
         flex-direction: column-reverse;
     }
 
-    canvas{
-        min-width: 300px;
-        min-height: 200px;
+    canvas {
+        width: 100% !important;
+        object-fit: contain;
     }
 
     img{

@@ -1,5 +1,7 @@
 import subprocess
 import json
+import datetime
+import os
 
 commit = True
 
@@ -27,30 +29,84 @@ run("./wpt/wpt make-hosts-file | sudo tee -a /etc/hosts")
 #run WPT
 print("Running WPT...")
 try :
-    run("PATH=$PATH:$HOME/.local/opt/paper-muncher/bin && cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --include-file ../wpt-whitelist")
+    run("PATH=$PATH:$HOME/.local/opt/paper-muncher/bin && cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --log-wptreport ./result.json --include-file ../wpt-whitelist")
 except Exception: # broad exception because wpts are randomly raising errors for no reason
     print("WPT failed")
 
 print("Processing the results...")
 #retreive last log
-f = open("wpt/result.txt", "r")
+
+def loadWhiteList():
+    f = open("./wpt-whitelist", "r")
+    whitelist = f.readline()
+    f.close()
+    whitelist = whitelist.strip().split("\n")
+    for i in range(len(whitelist)):
+        whitelist[i] = whitelist[i].strip('/')
+    return whitelist
+
+def processWPTdata(whitelist, data):
+    current_date = datetime.date.today().strftime("%d-%m-%Y")
+
+    structured = {'summary':{'date': current_date,'passing':0, 'failing':0}}
+    for test in data['results']:
+        current_suite = None
+        for suite in whitelist:
+            if test['test'].strip('/').startswith(suite):
+                current_suite = suite
+                print(f"Found suite {suite}")
+                break
+
+        if current_suite is None:
+            print(f"Test {test['test']} not in whitelist {whitelist}")
+            current_suite = 'other'
+
+        if not current_suite in structured:
+            structured[current_suite] = {'date': current_date,'passing':0, 'failing':0}
+
+        if test['status'] == 'PASS':
+            structured['summary']['passing'] += 1
+            structured[current_suite]['passing'] += 1
+        else:
+            structured['summary']['failing'] += 1
+            structured[current_suite]['failing'] += 1
+
+    return structured
+
+def saveResults(structured):
+    for suite in structured:
+        if suite == 'summary':
+            fileName = "wpt"
+        else:
+            fileName = suite.replace('/', '_')
+
+        if os.path.exists(f"./logs/{fileName}.json"):
+            fd = open(f"./logs/{fileName}.json", "r")
+            content = json.load(fd)
+            fd.close()
+        else:
+            content = []
+        content.append(structured[suite])
+
+        fd = open(f"./logs/{fileName}.json", "w+")
+        fd.write(json.dumps(content))
+        fd.close()
+
+f = open("./wpt/result.json", "r")
 res = json.loads(f.readline())
 f.close()
+
+
+whitelist = loadWhiteList()
+structured = processWPTdata(whitelist, res)
 #append it to ours
+saveResults(structured)
 
-fd = open("logs/wpt.json", "r+")
-content = json.load(fd)
-content.append(res)
-
-fd.seek(0) # replace content
-fd.write(json.dumps(content))
-fd.truncate()
-fd.close()
 
 if commit:
     print("Commiting the results")
     run("git config --global user.name 'Zima b-lou'")
     run("git config --global user.email 'zima@carbonlab.dev'")
-    run("git add -A --force wpt.json")
+    run("git add -A --force logs")
     run("git commit -am '🤖 [Automated] Update WPT compliance Check'")
     run("git push")
