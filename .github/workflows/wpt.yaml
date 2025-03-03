@@ -42,7 +42,7 @@ jobs:
         with:
           name: wpt-log-${{ matrix.current-chunk }}
           path: |
-            /wpt/wpt_report_*.json
+            ./wpt/wpt_report_*.json
           if-no-files-found: "error"
 
   collect_results:
