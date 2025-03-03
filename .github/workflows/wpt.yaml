@@ -7,9 +7,8 @@ on:
 
 jobs:
   wpt_job:
-    runs-on: ubuntu-latest # Changed to ubuntu-latest
-    permissions:
-      contents: write
+    name: Vaev
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         current-chunk: [ 1, 2, 3, 4, 5, 6, 7, 8 ]
@@ -27,15 +26,27 @@ jobs:
           python-version: '3.12'
 
       - name: prepare environment.
-        run: python prepare.py
-
-      - name: Run WPT
-        run: PATH=$PATH:$HOME/.local/opt/paper-muncher/bin && cd wpt && \ 
-         ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver \ 
+        run: | 
+          python prepare.py
+          PATH=$PATH:$HOME/.local/opt/paper-muncher/bin && cd wpt && \
+          ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver \
           --test-type=reftest --log-wptreport ./result_${{ matrix.current-chunk }}.json \
           --this-chunk=${{ matrix.current-chunk }} \
           --total-chunks=${{ matrix.total-chunks }} \
           --include-file ../wpt-whitelist
 
+      - name: Publish results
+        uses: actions/upload-artifact@v4.1.0
+        with:
+          name: wpt-log-${{ matrix.current-chunk }}
+          path: |
+            /wpt/wpt_report_*.json
+          if-no-files-found: "error"
+
+  collect_results:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
       - name: process WPT results
         run: python processResults.py
