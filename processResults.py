@@ -4,36 +4,11 @@ import datetime
 import os
 
 commit = True
-local = False
-
-wpt_repository = "https://github.com/vaev-org/wpt.git"
-target_repository = "https://github.com/odoo/paper-muncher.git"
+MATRIX_SIZE = 8
 
 def run(command):
     subprocess.run(command, shell=True, check=True)
 
-print("Preparing the environment...")
-#clone latest target repository
-if not local:
-    run(f"git clone {target_repository} paper-muncher --depth 1")
-
-    #install the target
-    run("cd paper-muncher && ./ck tools setup") #cd ing because ck does not handle relative paths correctly
-    run("cd paper-muncher && ./ck package install --mixins=release --prefix=$HOME/.local/opt/paper-muncher")
-
-    #clone latest WPT repository
-    run(f"git clone {wpt_repository} wpt --depth 1")
-
-    #generate WPT hosts
-    run("./wpt/wpt make-hosts-file | sudo tee -a /etc/hosts")
-
-
-#run WPT
-print("Running WPT...")
-try :
-    run("PATH=$PATH:$HOME/.local/opt/paper-muncher/bin && cd wpt && ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver --test-type=reftest --log-wptreport ./result.json --include-file ../wpt-whitelist")
-except Exception: # broad exception because wpts are randomly raising errors for no reason
-    print("WPT failed")
 
 print("Processing the results...")
 #retreive last log
@@ -95,13 +70,18 @@ def saveResults(structured):
         fd.write(json.dumps(content))
         fd.close()
 
-f = open("./wpt/result.json", "r")
-res = json.loads(f.readline())
-f.close()
+results = []
+for i in range(0, MATRIX_SIZE):
+    f = open("./wpt/result.json", "r")
+    results.append(json.loads(f.readline()))
+    f.close()
 
 
 whitelist = loadWhiteList()
-structured = processWPTdata(whitelist, res)
+
+for res in results:
+    structured = processWPTdata(whitelist, res)
+
 #append it to ours
 saveResults(structured)
 

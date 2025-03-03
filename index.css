@@ -51,7 +51,6 @@ img{
 }
 
 canvas {
-    width: 82% !important;
     object-fit: contain;
 }
 
@@ -91,6 +90,7 @@ canvas {
     canvas {
         width: 100% !important;
         object-fit: contain;
+        height: 230px !important;
     }
 
     img{

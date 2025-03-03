@@ -32,10 +32,7 @@ async function initNav(){
     }
 }
 
-// Get the canvas element and its context
 const ctx = document.getElementById('myChart').getContext('2d');
-
-
 
 async function genReport(report) {
     const data = await fetch(`./logs/${report.replaceAll('/','_')}.json`)
@@ -51,6 +48,8 @@ async function genReport(report) {
     }, {})
     const dateList = Object.values(dateMap)
     initChart(dateList)
+
+
 }
 
 function initChart(points) {
@@ -116,7 +115,7 @@ function initChart(points) {
                     }
                 },
             },
-            responsive: true,
+            responsive: false,
             interaction: {
                 mode: 'nearest',
                 axis: 'x',
