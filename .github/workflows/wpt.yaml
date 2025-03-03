@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  wpt_job:
+  run_wpt:
     name: Vaev
     runs-on: ubuntu-latest
     strategy:
@@ -28,11 +28,13 @@ jobs:
       - name: prepare environment.
         run: | 
           python prepare.py
-          PATH=$PATH:$HOME/.local/opt/paper-muncher/bin && cd wpt && \
+          PATH=$PATH:$HOME/.local/opt/paper-muncher/bin 
+          cd wpt && \
           ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver \
           --test-type=reftest --log-wptreport ./result_${{ matrix.current-chunk }}.json \
           --this-chunk=${{ matrix.current-chunk }} \
           --total-chunks=${{ matrix.total-chunks }} \
+          --no-fail-on-unexpected \
           --include-file ../wpt-whitelist
 
       - name: Publish results
@@ -44,6 +46,7 @@ jobs:
           if-no-files-found: "error"
 
   collect_results:
+    needs: run_wpt
     runs-on: ubuntu-latest
     permissions:
       contents: write
