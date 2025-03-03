@@ -13,6 +13,8 @@ def run(command):
 print("Processing the results...")
 #retreive last log
 
+wpt_repository = "https://github.com/vaev-org/wpt.git"
+
 def loadWhiteList():
     f = open("./wpt-whitelist", "r")
     whitelist = f.read()
@@ -69,6 +71,8 @@ def saveResults(structured):
         fd = open(f"./logs/{fileName}.json", "w+")
         fd.write(json.dumps(content))
         fd.close()
+
+run(f"git clone {wpt_repository} wpt --depth 1")
 
 results = []
 for i in range(0, MATRIX_SIZE):
