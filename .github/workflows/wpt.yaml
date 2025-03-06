@@ -2,7 +2,7 @@ name: WPT compliance check
 
 on:
   schedule:
-    - cron: "0 0 2 * *"
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
           PATH=$PATH:$HOME/.local/opt/paper-muncher/bin 
           cd wpt && \
           ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver \
-          --test-type=reftest --log-wptreport ${{ runner.temp }}/wpt_report_result_${{ matrix.current-chunk }}.json \
+          --test-type=reftest --log-wptreport ${{ runner.temp }}/wpt_report_${{ matrix.current-chunk }}.json \
           --this-chunk=${{ matrix.current-chunk }} \
           --total-chunks=${{ matrix.total-chunks }} \
           --no-fail-on-unexpected \
@@ -53,4 +53,6 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
       - name: process WPT results
-        run: python processResults.py
+        run: | 
+          ls
+          python processResults.py

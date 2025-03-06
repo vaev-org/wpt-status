@@ -97,3 +97,10 @@ canvas {
         height: 5rem;
     }
 }
+
+@media (min-aspect-ratio: 1/1) {
+    #reports{
+        overflow: auto;
+        max-height: 36svh;
+    }
+}

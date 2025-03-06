@@ -76,7 +76,7 @@ run(f"git clone {wpt_repository} wpt --depth 1")
 
 results = []
 for i in range(0, MATRIX_SIZE):
-    f = open("./wpt/result.json", "r")
+    f = open(f"./wpt-log-{i}", "r")
     results.append(json.loads(f.readline()))
     f.close()
 
