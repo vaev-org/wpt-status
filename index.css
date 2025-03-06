@@ -81,6 +81,14 @@ canvas {
     text-decoration: underline ;
 }
 
+#reports a.info{
+    color: hsl(calc(120 * var(--value)), 100%, 50%);;
+}
+
+#reports a.passing{
+    color: darkblue;
+}
+
 @media (max-aspect-ratio: 1/1) {
     .pageContainer > .inline{
         display: flex;

@@ -64,5 +64,5 @@ jobs:
     - uses: actions/download-artifact@v4
     - name: process WPT results
       run: |
-        ls
+        ls ./wpt-log-1
         python processResults.py
