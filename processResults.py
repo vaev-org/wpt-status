@@ -80,11 +80,14 @@ for i in range(0, MATRIX_SIZE):
     results.append(json.loads(f.readline()))
     f.close()
 
+# merging the results
+flattened = {"results":[]}
+for res in results:
+    flattened["results"] = flattened["results"] + res['results']
 
 whitelist = loadWhiteList()
 
-for res in results:
-    structured = processWPTdata(whitelist, res)
+structured = processWPTdata(whitelist, flattened)
 
 #append it to ours
 saveResults(structured)
