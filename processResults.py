@@ -2,9 +2,12 @@ import subprocess
 import json
 import datetime
 import os
+import requests
 
 commit = True
+report_discord = True
 MATRIX_SIZE = 8
+webhook_url = os.environ.get('DISCORD_WEBHOOK_URL')
 
 def run(command):
     subprocess.run(command, shell=True, check=True)
@@ -100,3 +103,39 @@ if commit:
     run("git add -A --force logs")
     run("git commit -am '🤖 [Automated] Update WPT compliance Check'")
     run("git push")
+
+
+def reportDiscord(structured):
+    diff = []
+
+    for structured_info in structured:
+        if os.path.exists(f"./logs/{structured_info.replace('/', '_')}.json"):
+            fd = open(f"./logs/{structured_info.replace('/', '_')}.json", "r")
+            content = json.load(fd)
+            fd.close()
+            if len(content) > 1:
+                if content[-1]['passing'] != content[-2]['passing']:
+                    diff.append({"name":structured_info ,"diff":content[-1]['passing'] - content[-2]['passing']})
+
+
+    if not diff:
+        print("No diff to report")
+        return
+
+    print("Reporting to Discord")
+    message = {
+        'content': 'Diff between the last two runs :\n',
+    }
+
+    for i in range(len(diff)):
+        message['content'] += f"{diff[i]['name']}: {diff[i]['diff']}\n"
+
+    response = requests.post(webhook_url, data=json.dumps(message), headers={'Content-Type': 'application/json'})
+
+    if response.status_code == 204:
+        print('Message envoyé avec succès !')
+    else:
+        print(f'Erreur lors de l\'envoi du message : {response.status_code}')
+
+if report_discord:
+    reportDiscord(structured)

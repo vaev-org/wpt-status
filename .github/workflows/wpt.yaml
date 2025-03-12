@@ -63,6 +63,7 @@ jobs:
 
     - uses: actions/download-artifact@v4
     - name: process WPT results
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       run: |
-        ls ./wpt-log-1
         python processResults.py
