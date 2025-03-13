@@ -66,4 +66,5 @@ jobs:
       env:
         DISCORD_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       run: |
+        pip install requests
         python processResults.py
