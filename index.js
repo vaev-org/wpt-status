@@ -1,6 +1,23 @@
 const maxDays = 30;
 let currentChart
 
+function getLastNElements(array, n) {
+    if (!Array.isArray(array)) {
+        return "Input is not an array.";
+    }
+
+    if (n <= 0) {
+        return []; // Return an empty array if n is non-positive.
+    }
+
+    if (n >= array.length) {
+        return array.slice(); // Return a copy of the entire array if n is greater than or equal to the array length.
+    }
+
+    return array.slice(-n);
+}
+
+
 function changeReport(target) {
     genReport(target)
     const urlParams = new URLSearchParams(window.location.search)
@@ -32,7 +49,14 @@ async function initNav(){
     }
 }
 
-const ctx = document.getElementById('myChart').getContext('2d');
+
+const canvas = document.getElementById('myChart');
+const ctx = canvas.getContext('2d');
+
+if (window.getComputedStyle(canvas).getPropertyValue('--mobile') === '1') {
+    canvas.width = 320
+    canvas.height = 260
+}
 
 async function genReport(report) {
     const data = await fetch(`./logs/${report.replaceAll('/','_')}.json`)
@@ -58,7 +82,7 @@ function initChart(points) {
     }
 
     const data = {
-        labels: points.map(item => item.date), // Extract labels
+        labels: getLastNElements(points.map(item => item.date),maxDays), // Extract labels
         datasets: [{
             label: 'Passing WPT',
             data: points.map(item => item.passing),

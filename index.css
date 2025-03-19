@@ -90,15 +90,13 @@ canvas {
 }
 
 @media (max-aspect-ratio: 1/1) {
+    body{
+        --mobile: 1;
+    }
+
     .pageContainer > .inline{
         display: flex;
         flex-direction: column-reverse;
-    }
-
-    canvas {
-        width: 100% !important;
-        object-fit: contain;
-        height: 230px !important;
     }
 
     img{
