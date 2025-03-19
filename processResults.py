@@ -58,6 +58,8 @@ def processWPTdata(whitelist, data):
     current_date = datetime.date.today().strftime("%d-%m-%Y")
 
     structured = {'summary':{'date': current_date,'passing':0, 'failing':0}}
+    passing = []
+
     for test in data['results']:
         current_suite = None
         for suite in whitelist:
@@ -74,13 +76,14 @@ def processWPTdata(whitelist, data):
             structured[current_suite] = {'date': current_date,'passing':0, 'failing':0}
 
         if test['status'] == 'PASS':
+            passing.append(test['test'])
             structured['summary']['passing'] += 1
             structured[current_suite]['passing'] += 1
         else:
             structured['summary']['failing'] += 1
             structured[current_suite]['failing'] += 1
 
-    return structured
+    return structured, passing
 
 def saveResults(structured):
     for suite in structured:
@@ -101,6 +104,17 @@ def saveResults(structured):
         fd.write(json.dumps(content))
         fd.close()
 
+def paoulogs(passing):
+    for suite in structured:
+        if suite == 'summary':
+            fileName = "wpt"
+        else:
+            fileName = suite.replace('/', '_')
+
+        fd = open(f"./logs/passing/{fileName}.json", "w+")
+        fd.write(json.dumps(passing))
+        fd.close()
+
 run(f"git clone {wpt_repository} wpt --depth 1")
 
 results = []
@@ -116,10 +130,11 @@ for res in results:
 
 included = loadIncluded()
 
-structured = processWPTdata(included, flattened)
+structured, passing = processWPTdata(included, flattened)
 
 #append it to ours
 saveResults(structured)
+paoulogs(passing)
 
 
 if commit:
@@ -129,7 +144,6 @@ if commit:
     run("git add -A --force logs")
     run("git commit -am '🤖 [Automated] Update WPT compliance Check'")
     run("git push")
-
 
 def reportDiscord(structured):
     diff = []
