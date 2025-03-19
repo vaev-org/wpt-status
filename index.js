@@ -32,7 +32,7 @@ async function initNav(){
 
     const navList = document.getElementById('reports')
 
-    const whitelist = await(await fetch('./wpt-whitelist')).text()
+    const whitelist = await(await fetch('https://raw.githubusercontent.com/odoo/paper-muncher/refs/heads/main/meta/wpt/includelist')).text()
 
     whitelist.split("\n").forEach((item) => {
         if (item === "") return
