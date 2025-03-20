@@ -65,7 +65,6 @@ def processWPTdata(whitelist, data):
         for suite in whitelist:
             if test['test'].strip('/').startswith(suite):
                 current_suite = suite
-                print(f"Found suite {suite}")
                 break
 
         if current_suite is None:
@@ -75,10 +74,11 @@ def processWPTdata(whitelist, data):
         if not current_suite in structured:
             structured[current_suite] = {'date': current_date,'passing':0, 'failing':0}
 
+        if not current_suite in passing:
+            passing[current_suite] = []
+
         if test['status'] == 'PASS':
             passing['summary'].append(test['test'])
-            if not passing.get(current_suite):
-                passing[current_suite] = []
             passing[current_suite].append(test['test'])
             structured['summary']['passing'] += 1
             structured[current_suite]['passing'] += 1
@@ -108,7 +108,7 @@ def saveResults(structured):
         fd.close()
 
 def paoulogs(passing):
-    for suite in structured:
+    for suite in passing:
         if suite == 'summary':
             fileName = "wpt"
         else:
