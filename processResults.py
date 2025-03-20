@@ -77,6 +77,8 @@ def processWPTdata(whitelist, data):
 
         if test['status'] == 'PASS':
             passing['summary'].append(test['test'])
+            if not passing.get(current_suite):
+                passing[current_suite] = []
             passing[current_suite].append(test['test'])
             structured['summary']['passing'] += 1
             structured[current_suite]['passing'] += 1
