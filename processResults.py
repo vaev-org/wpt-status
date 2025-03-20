@@ -58,7 +58,7 @@ def processWPTdata(whitelist, data):
     current_date = datetime.date.today().strftime("%d-%m-%Y")
 
     structured = {'summary':{'date': current_date,'passing':0, 'failing':0}}
-    passing = []
+    passing = {'summary':[]}
 
     for test in data['results']:
         current_suite = None
@@ -76,7 +76,8 @@ def processWPTdata(whitelist, data):
             structured[current_suite] = {'date': current_date,'passing':0, 'failing':0}
 
         if test['status'] == 'PASS':
-            passing.append(test['test'])
+            passing['summary'].append(test['test'])
+            passing[current_suite].append(test['test'])
             structured['summary']['passing'] += 1
             structured[current_suite]['passing'] += 1
         else:
@@ -112,7 +113,7 @@ def paoulogs(passing):
             fileName = suite.replace('/', '_')
 
         fd = open(f"./logs/passing/{fileName}.json", "w+")
-        fd.write(json.dumps(passing))
+        fd.write(json.dumps(passing[suite]))
         fd.close()
 
 run(f"git clone {wpt_repository} wpt --depth 1")
