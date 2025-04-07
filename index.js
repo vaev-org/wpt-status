@@ -32,13 +32,31 @@ async function initNav(){
 
     const navList = document.getElementById('reports')
 
-    const whitelist = await(await fetch('https://raw.githubusercontent.com/odoo/paper-muncher/refs/heads/main/meta/wpt/includelist')).text()
+    const whitelist = JSON.parse(await(await fetch('./includelist')).text())
 
-    whitelist.split("\n").forEach((item) => {
-        if (item === "") return
+    whitelist.forEach((item) => {
+        let compliance= item.compliance;
+        let col1
+        let col2
+
+        if (compliance === 100){
+            col1 = "var(--blue)"
+            col2 = "var(--blue)"
+        }else if(compliance >= 50){
+            col1 = "var(--green)"
+            col2 = "var(--orange)"
+            compliance = compliance - 50
+        }else{
+            col1 = "var(--orange)"
+            col2 = "var(--red)"
+        }
+
         const DomItem = document.createElement('div')
         DomItem.classList.add('nav-item')
-        DomItem.innerHTML = `<a class="nav-link" onclick="changeReport('${item}')">${item}</a>`
+        DomItem.style.setProperty('--compliance', compliance.toString());
+        DomItem.style.setProperty('--color1', col1);
+        DomItem.style.setProperty('--color2', col2);
+        DomItem.innerHTML = `<a class="nav-link inline" onclick="changeReport('${item.name}')"><div class="circle tooltip"><div class="tooltiptext">${item.compliance}%</div></div> ${item.name}</a>`
         navList.appendChild(DomItem)
     })
 
@@ -158,3 +176,44 @@ function initChart(points) {
 }
 const report = await initNav()
 genReport(report)
+
+
+// these are the circles showing how much each report is passing
+function loadInfoPoints(points) {
+    for (point of points){
+
+    }
+    document.documentElement.style
+        .setProperty('--pourcent', pourcent);
+
+
+    if(pourcent <=50){
+        document.documentElement.style
+            .setProperty('--couleur1', 'orange');
+
+        document.documentElement.style
+            .setProperty('--couleur2', 'red');
+    }
+
+    else if(50<pourcent && pourcent <= 99.9){
+        document.documentElement.style
+            .setProperty('--couleur1', '#00FF00');
+
+        document.documentElement.style
+            .setProperty('--couleur2', 'orange');
+
+        pourcent = pourcent-50;
+
+        document.documentElement.style
+            .setProperty('--pourcent', pourcent);
+
+    }
+
+    else{
+        document.documentElement.style
+            .setProperty('--couleur1', 'blue');
+
+        document.documentElement.style
+            .setProperty('--couleur2', 'blue');
+    }
+}

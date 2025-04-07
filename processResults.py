@@ -118,6 +118,16 @@ def paoulogs(passing):
         fd.write(json.dumps(passing[suite]))
         fd.close()
 
+def saveIncludeList(structured):
+    content = []
+    for suite in structured:
+        content.append({"name":suite, "compliance":structured[suite]['passing']/structured[suite]['passing'] + structured[suite]['failing']*100})
+
+    fd = open("./includedlist", "w+")
+    fd.write(json.dumps(content))
+    fd.close()
+
+
 run(f"git clone {wpt_repository} wpt --depth 1")
 
 results = []
