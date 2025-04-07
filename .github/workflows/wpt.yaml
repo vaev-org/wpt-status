@@ -26,7 +26,8 @@ jobs:
           python-version: '3.12'
 
       - name: prepare environment.
-        run: | 
+        run: |
+          pip install requests
           python prepare.py
           PATH=$PATH:$HOME/.local/opt/paper-muncher/bin 
           cd wpt && \
