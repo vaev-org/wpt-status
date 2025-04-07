@@ -1,14 +1,9 @@
-import subprocess
-import json
-import datetime
-import os
-
+from toolkit import run, loadIncluded
 
 wpt_repository = "https://github.com/vaev-org/wpt.git"
 target_repository = "https://github.com/odoo/paper-muncher.git"
+included = loadIncluded()
 
-def run(command):
-    subprocess.run(command, shell=True, check=True)
 
 print("Preparing the environment...")
 #clone latest target repository
