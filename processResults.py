@@ -81,7 +81,7 @@ def paoulogs(passing):
 def saveIncludeList(structured):
     content = []
     for suite in structured:
-        content.append({"name":suite, "compliance":structured[suite]['passing']/structured[suite]['passing'] + structured[suite]['failing']*100})
+        content.append({"name":suite, "compliance":structured[suite]['passing']/(structured[suite]['passing'] + structured[suite]['failing'])*100})
 
     fd = open("./includedlist", "w+")
     fd.write(json.dumps(content))
