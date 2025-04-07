@@ -108,7 +108,7 @@ structured, passing = processWPTdata(included, flattened)
 #append it to ours
 saveResults(structured)
 paoulogs(passing)
-
+saveIncludeList(structured)
 
 if commit:
     print("Commiting the results")
