@@ -83,7 +83,7 @@ def saveIncludeList(structured):
     for suite in structured:
         content.append({"name":suite, "compliance":structured[suite]['passing']/(structured[suite]['passing'] + structured[suite]['failing'])*100})
 
-    fd = open("./includedlist", "w+")
+    fd = open("./logs/includedlist", "w+")
     fd.write(json.dumps(content))
     fd.close()
 

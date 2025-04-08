@@ -32,7 +32,7 @@ async function initNav(){
 
     const navList = document.getElementById('reports')
 
-    const whitelist = JSON.parse(await(await fetch('./includelist')).text())
+    const whitelist = JSON.parse(await(await fetch('./logs/includelist')).text())
 
     whitelist.forEach((item) => {
         let compliance= item.compliance;
