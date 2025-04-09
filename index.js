@@ -35,7 +35,11 @@ async function initNav(){
     const whitelist = JSON.parse(await(await fetch('./logs/includedlist')).text())
 
     whitelist.forEach((item) => {
-        let compliance= item.compliance;
+        if (item.name === "summary"){
+            return
+        }
+
+        let compliance = Math.floor(item.compliance);
         let col1
         let col2
 
