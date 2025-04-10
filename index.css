@@ -136,9 +136,7 @@ canvas {
     text-align: center;
     border-radius: 6px;
     padding: 5px 0.6rem;
-
-    /* Position the tooltip */
-    position: absolute;
+    position: relative;
     transform: translate(1.2rem, -25%);
     z-index: 1;
 }
