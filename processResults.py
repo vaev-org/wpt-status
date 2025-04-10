@@ -118,6 +118,13 @@ if commit:
     run("git commit -am '🤖 [Automated] Update WPT compliance Check'")
     run("git push")
 
+def sign(number):
+    if number >= 0:
+        return "+"
+    elif number < 0:
+        return "-"
+
+
 def reportDiscord(structured):
     diff = []
 
@@ -137,12 +144,12 @@ def reportDiscord(structured):
 
     print("Reporting to Discord")
     message = {
-        'content': 'Diff between the last two runs :\n',
+        'content': '```diff\nDiff between the last two runs :\n',
     }
 
     for i in range(len(diff)):
-        message['content'] += f"{diff[i]['name']}: {diff[i]['diff']}\n"
-
+        message['content'] += f"{sign(diff[i]['diff'])} {diff[i]['name']}: {diff[i]['diff']}\n"
+    message['content'] += '```'
     response = requests.post(webhook_url, data=json.dumps(message), headers={'Content-Type': 'application/json'})
 
     if response.status_code == 204:
