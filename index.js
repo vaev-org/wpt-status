@@ -43,6 +43,7 @@ async function initNav(){
         let col1
         let col2
 
+        let displayedCompliance = compliance
         if (compliance === 100){
             col1 = "var(--blue)"
             col2 = "var(--blue)"
@@ -60,7 +61,7 @@ async function initNav(){
         DomItem.style.setProperty('--compliance', compliance.toString());
         DomItem.style.setProperty('--color1', col1);
         DomItem.style.setProperty('--color2', col2);
-        DomItem.innerHTML = `<a class="nav-link inline" onclick="changeReport('${item.name}')"><div class="circle tooltip"><div class="tooltiptext">${compliance}%</div></div> ${item.name}</a>`
+        DomItem.innerHTML = `<a class="nav-link inline" onclick="changeReport('${item.name}')"><div class="circle tooltip"><div class="tooltiptext">${displayedCompliance}%</div></div> ${item.name}</a>`
         navList.appendChild(DomItem)
     })
 
