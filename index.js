@@ -14,6 +14,7 @@ function getLastNElements(array, n) {
         return array.slice(); // Return a copy of the entire array if n is greater than or equal to the array length.
     }
 
+    console.log(array, array.slice(-n))
     return array.slice(-n);
 }
 
@@ -104,11 +105,13 @@ function initChart(points) {
         currentChart.destroy()
     }
 
+    const displayedPoints = getLastNElements(points,maxDays)
+
     const data = {
-        labels: getLastNElements(points.map(item => item.date),maxDays), // Extract labels
+        labels: displayedPoints.map(item => [item.date, item.passing]), // Extract labels
         datasets: [{
             label: 'Passing WPT',
-            data: points.map(item => item.passing),
+            data: displayedPoints.map(item => item.passing),
             backgroundColor: [
                 'rgba(75, 192, 192, 0.2)'
             ],
@@ -120,7 +123,7 @@ function initChart(points) {
         },
         {
             label: 'Failing WPT',
-            data: points.map(item => item.failing),
+            data: displayedPoints.map(item => item.failing),
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)'
             ],
