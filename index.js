@@ -108,7 +108,7 @@ function initChart(points) {
     const displayedPoints = getLastNElements(points,maxDays)
 
     const data = {
-        labels: displayedPoints.map(item => [item.date, item.passing]), // Extract labels
+        labels: displayedPoints.map(item => item.date), // Extract labels
         datasets: [{
             label: 'Passing WPT',
             data: displayedPoints.map(item => item.passing),
