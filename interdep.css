@@ -1,0 +1,88 @@
+#report{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(calc(var(--rows, 3) + 1), 0fr);
+    border: solid 1px #d1d1d1;
+    gap: 1px;
+    background: #d1d1d1;
+    margin-top: 8rem;
+    margin-right: 2rem;
+}
+
+#report > div{
+    padding: 0.1rem;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.8rem;
+}
+
+#report > div.desc{
+    background: #ededed;
+    width: 9rem !important;
+}
+
+#report > div.name{
+    background: #ede8fb;
+}
+
+div.name.top{
+    clip-path: xywh(0 -8.5rem 4rem 9.8rem);
+}
+
+div.name.left{
+    width: 9rem !important;
+}
+
+#report > div.item{
+    background-color: color-mix(in srgb,  var(--color1, white) calc(var(--compliance, 0)*2%), var(--color2, white));
+}
+
+.invisible{
+    opacity: 0.001;
+    pointer-events: none;
+}
+
+.label{
+    width: 10rem;
+    text-align: left;
+    display: flex;
+    position: absolute;
+    white-space: nowrap;
+    background: #ede8fb;
+    padding: 0.1rem;
+    padding-left: 0.4rem;
+    height: 1rem;
+    border: 1px solid #bbb;
+    transform: translate(1.2rem, -4.2rem) rotate(-75deg);
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    min-width: 80px;
+    width: 80px;
+    white-space: pre;
+    height: 3rem;
+    max-width: none;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0.8rem;
+    position: absolute;
+    transform: translate(calc(50% + 0.8rem), 0);
+    z-index: 2;
+}
+
+.tooltip:hover .tooltiptext:after {
+    width: 0.8rem;
+    height: 0.8rem;
+    position: absolute;
+    content: '';
+    background: black;
+    z-index: 1;
+    transform: translate(calc(-40px - 1rem), calc(-50% - 1.3rem)) rotate(45deg);
+}

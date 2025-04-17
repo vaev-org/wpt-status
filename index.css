@@ -4,6 +4,7 @@ body{
     margin-top: 5rem;
     justify-content: center;
     background: #f8f9ff;
+    margin-bottom: 3rem;
 
     --blue: #3381db;
     --green: #00b84e;
@@ -35,8 +36,7 @@ img{
 
 .footer{
     display: flex;
-    gap: 2rem;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
@@ -75,7 +75,7 @@ canvas {
     flex-direction: column;
 }
 
-.reportContainer h2{
+h2{
     margin-bottom: 0.8rem;
     font-size: 1rem;
 }
@@ -143,6 +143,11 @@ canvas {
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    pointer-events: none;
+}
+
+.headline p{
+    text-align: center;
 }
 
 @media (max-aspect-ratio: 1/1) {
@@ -163,6 +168,6 @@ canvas {
 @media (min-aspect-ratio: 1/1) {
     #reports{
         overflow: auto;
-        max-height: 36svh;
+        max-height: 33svh;
     }
 }

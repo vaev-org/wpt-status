@@ -42,8 +42,14 @@ def extractResults(fileName):
     return set(content)
 
 
+def saveResults(content):
+    fd = open(f"./logs/interdependence/report.json", "w+")
+    fd.write(json.dumps(content))
+    fd.close()
+
+
 included = loadIncluded()
-included = ['css/css-borders']
+included = ["css/css-borders"]
 # run(f"git clone {wpt_repository} wpt --depth 1")
 report = {}
 
@@ -57,24 +63,45 @@ for i in range(len(included)):
         continue
 
     dir = f"./wpt/{included[i]}"
-    print(f"Directory: {dir}, results = {results}")
     if os.path.exists(dir):
         files = os.listdir(dir)
         for file in files:
             if file.endswith(".html") or file.endswith(".xht"):
-                print(f"File: {file}")
                 props = extractProps(dir+'/'+file)
                 if dir[5:]+'/'+file in results:
                     passing = True
                 else:
                     passing = False
-                print(f"Props: {props}, {passing}")
+                for prop in props:
+                    if prop not in report:
+                        report[prop] = {}
+
+                    for prop2 in props:
+                        if prop2 not in report[prop]:
+                            report[prop][prop2] = [0, 0] # using a list because it takes less place on disk
+
+                        report[prop][prop2][1] += 1
+                        if passing:
+                            report[prop][prop2][0] += 1
+
     else:
         print(f"Directory {dir} does not exist.")
         continue
 
 
+output = {"rows": [], "content": []}
 
+for row in report:
+    output["rows"].append(row)
+    line = []
+    for col in report:
+        if col not in report[row]:
+            line.append([0, 0])
+        else:
+            line.append(report[row][col])
+    output["content"].append(line)
+
+saveResults(output)
 
 if commit:
     print("Commiting the results")
