@@ -1,6 +1,6 @@
 
 async function initNav(){
-    const content = JSON.parse(await(await fetch('../logs/interdependence/report.json')).text())
+    const content = JSON.parse(await(await fetch('./logs/interdependence/report.json')).text())
     const N = content.rows.length
     const ArrayWrapper = document.getElementById('report')
     ArrayWrapper.style.setProperty('--rows', N.toString())
