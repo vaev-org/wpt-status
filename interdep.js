@@ -21,6 +21,7 @@ async function initNav(){
 function filterReport(props, report){
     let filtered = {"rows": [], "content": []}
 
+    // retreiving the position of the props in the report
     let indexes = []
     for ( let i = 0; i < props.length; i++){
         indexes.push({"name": props[i], "index": i})
@@ -28,30 +29,30 @@ function filterReport(props, report){
     for (let i = 0; i < report.rows.length; i++){
         for (let j = 0; j < props.length; j++){
             if (props[j] === report.rows[i]){
-                console.log("row", report.rows[i], j, indexes)
                 indexes[j].index = i // sry for this
             }
         }
     }
-    console.log("indexes", indexes, report.rows.length, report.content.length)
+
+    // retrieving relevant rows
     let included = []
     for (let i = 0; i < report.content.length; i++){
         for (let j = 0; j < indexes.length; j++){
-            if( report.content[i][indexes[j].index].total !== 0 ){
-                console.log("content", indexes.length, included.length)
+            if( report.content[i][indexes[j].index][1] !== 0 ){
                 included.push({"name": report.rows[i], "index": i})
             }
         }
     }
-    console.log("included", included)
 
-
-    // pour chaque row
-    // trouver les indexes J de chaque prop dans row
-    // pour chaque intersection de rows
-    // ajouter la case au content
-
-    
+    // extracting the meaningful content
+    for (let i = 0; i < included.length; i++){
+        let line = []
+        for (let j = 0; j < included.length; j++){
+            line.push(report.content[included[i].index][included[j].index])
+        }
+        filtered.rows.push(included[i].name)
+        filtered.content.push(line)
+    }
 
     return filtered
 }
