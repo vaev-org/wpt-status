@@ -1,35 +1,91 @@
-
 async function initNav(){
     const content = JSON.parse(await(await fetch('./logs/interdependence/report.json')).text())
     const N = content.rows.length
+    const urlParams = new URLSearchParams(window.location.search)
+    const propList = JSON.parse(urlParams.get('props'))
+
+    console.log("prop list", propList)
+
+
+    if (propList === null || propList === undefined){
+        drawReport(content.rows, content.content)
+    }else{
+        const filtered = filterReport(propList, content)
+        drawReport(filtered.rows, filtered.content)
+    }
+
+
+    //TODO better regex
+}
+
+function filterReport(props, report){
+    let filtered = {"rows": [], "content": []}
+
+    let indexes = []
+    for ( let i = 0; i < props.length; i++){
+        indexes.push({"name": props[i], "index": i})
+    }
+    for (let i = 0; i < report.rows.length; i++){
+        for (let j = 0; j < props.length; j++){
+            if (props[j] === report.rows[i]){
+                console.log("row", report.rows[i], j, indexes)
+                indexes[j].index = i // sry for this
+            }
+        }
+    }
+    console.log("indexes", indexes, report.rows.length, report.content.length)
+    let included = []
+    for (let i = 0; i < report.content.length; i++){
+        for (let j = 0; j < indexes.length; j++){
+            if( report.content[i][indexes[j].index].total !== 0 ){
+                console.log("content", indexes.length, included.length)
+                included.push({"name": report.rows[i], "index": i})
+            }
+        }
+    }
+    console.log("included", included)
+
+
+    // pour chaque row
+    // trouver les indexes J de chaque prop dans row
+    // pour chaque intersection de rows
+    // ajouter la case au content
+
+    
+
+    return filtered
+}
+
+function drawReport(rows, content){
     const ArrayWrapper = document.getElementById('report')
+    const N = rows.length
+
     ArrayWrapper.style.setProperty('--rows', N.toString())
 
     let html = ""
     for(let i = 0; i<N; i++){
-        html += `<div class="name top"><div class="label">${content.rows[i]}</div></div>`
+        html += `<div class="name top"><div class="label">${rows[i]}</div></div>`
     }
 
     for(let j = 0; j<N; j++){
         for(let i = -1; i<N; i++){
             if (i === -1) {
-                html += `<div class="name left">${content.rows[j]}</div>`
+                html += `<div class="name left">${rows[j]}</div>`
             } else {
-                const elt = content.content[j][i]
+                const elt = content[j][i]
                 html += `<div class="item tooltip" style="${getColor(elt[0],elt[1])}">
-<div class="tooltiptext">${content.rows[j]} 
-${content.rows[i]}
+<div class="tooltiptext">${rows[j]} 
+${rows[i]}
 ${elt[0] + "/"  + elt[1]}
 </div>
-<div class="invisible">${content.rows[j]} ${content.rows[i]}</div>
+<div class="invisible">${rows[j]} ${rows[i]}</div>
 </div>`
             }
         }
     }
     ArrayWrapper.innerHTML += html
 
-    //TODO better regex
-    //TODO filtering
+
 }
 
 function getColor(passing,total) {
