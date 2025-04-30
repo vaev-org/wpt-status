@@ -3,7 +3,7 @@ import os
 import json
 from toolkit import run, loadIncluded
 
-commit = False
+commit = True
 wpt_repository = "https://github.com/vaev-org/wpt.git"
 REGEX_CSS_PROP = r"(?<=\s|\{)((-[a-z]+-)?[a-z]+(-[a-z0-9]+)*)\s*:"
 COMPILED_CSS_REGEX = re.compile(REGEX_CSS_PROP)
@@ -49,8 +49,7 @@ def saveResults(content):
 
 
 included = loadIncluded()
-included = ["css/css-borders"]
-# run(f"git clone {wpt_repository} wpt --depth 1")
+run(f"git clone {wpt_repository} wpt --depth 1")
 report = {}
 
 for i in range(len(included)):
