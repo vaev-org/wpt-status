@@ -24,6 +24,6 @@ jobs:
 
       - name: Process data.
         run: |
-          pip install psutils
+          pip install psutil
           python prepareBenchmarks.py
           python ./samples/benchs/benchmark.py

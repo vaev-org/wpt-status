@@ -6,3 +6,4 @@ paper-muncher
 includedTests
 samples
 venv
+*.deb

@@ -1,5 +1,7 @@
 const maxDays = 30;
 let currentChart
+let perfChartTime
+let perfChartMem
 
 function getLastNElements(array, n) {
     if (!Array.isArray(array)) {
@@ -77,6 +79,13 @@ async function initNav(){
 const canvas = document.getElementById('myChart');
 const ctx = canvas.getContext('2d');
 
+const timePerfCanvas = document.getElementById('timeChart');
+const timeCtx = timePerfCanvas.getContext('2d');
+
+const memPerfCanvas = document.getElementById('memChart');
+const memCtx = memPerfCanvas.getContext('2d');
+
+
 if (window.getComputedStyle(canvas).getPropertyValue('--mobile') === '1') {
     canvas.width = 320
     canvas.height = 260
@@ -96,6 +105,7 @@ async function genReport(report) {
     }, {})
     const dateList = Object.values(dateMap)
     initChart(dateList)
+    initPerfChart([])
 
 
 }
@@ -224,4 +234,112 @@ function loadInfoPoints(points) {
         document.documentElement.style
             .setProperty('--couleur2', 'blue');
     }
+}
+
+
+
+function initPerfChart(points){
+    const displayedPoints = getLastNElements(points,maxDays)
+
+    const data = {
+        labels: displayedPoints.map(item => item.date), // Extract labels
+        datasets: [{
+            label: 'Passing WPT',
+            data: displayedPoints.map(item => item.passing),
+            borderColor: [
+                'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 2
+        },
+            {
+                label: 'Failing WPT',
+                data: displayedPoints.map(item => item.failing),
+                borderColor: [
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 2
+            }]
+    }
+
+    const footer = (tooltipItems) => {
+        let sum = 0;
+
+        tooltipItems.forEach(function(tooltipItem) {
+            sum += tooltipItem.parsed.y;
+        });
+        return 'Total: ' + sum + " (" +  (tooltipItems[0].parsed.y*100/sum).toFixed(2) + "% passed)"
+    };
+
+    // Create the chart
+    perfChartTime = new Chart(timeCtx, {
+        type: 'line',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stacked: false,
+                    title: {
+                        display: true,
+                        text: 'Conversion time (log scale)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Table size (log scale)'
+                    }
+                },
+            },
+            responsive: false,
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        footer: footer,
+                    }
+                }
+            }
+        }
+    });
+
+    memChartTime = new Chart(memCtx, {
+        type: 'line',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stacked: false,
+                    title: {
+                        display: true,
+                        text: 'Peak memory usage (MB, log scale)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Table size (log scale)'
+                    }
+                },
+            },
+            responsive: false,
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        footer: footer,
+                    }
+                }
+            }
+        }
+    });
 }
