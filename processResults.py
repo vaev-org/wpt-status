@@ -136,7 +136,8 @@ def reportDiscord(structured):
             if len(content) > 1:
                 if content[-1]['passing'] != content[-2]['passing']:
                     diff.append({"name":structured_info ,"diff":content[-1]['passing'] - content[-2]['passing']})
-
+            elif len(content) == 1:
+                diff.append({"name":structured_info ,"diff":content[-1]['passing']})
 
     if not diff:
         print("No diff to report")
