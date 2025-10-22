@@ -4,8 +4,8 @@ import os
 import requests
 from toolkit import run, loadIncluded
 
-commit = True
-report_discord = True
+commit = False
+report_discord = False
 MATRIX_SIZE = 8
 webhook_url = os.environ.get('DISCORD_WEBHOOK_URL')
 
@@ -88,7 +88,7 @@ def saveIncludeList(structured):
     fd.close()
 
 
-run(f"git clone {wpt_repository} wpt --depth 1")
+# run(f"git clone {wpt_repository} wpt --depth 1")
 
 results = []
 for i in range(0, MATRIX_SIZE):
