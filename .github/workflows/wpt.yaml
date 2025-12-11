@@ -29,9 +29,8 @@ jobs:
         run: |
           pip install requests
           python prepare.py
-          PATH=$PATH:$HOME/.local/opt/paper-muncher/bin 
           cd wpt && \
-          ./wpt run paper_muncher --webdriver-binary paper_muncher_webdriver \
+          ./wpt run vaev --webdriver-binary $HOME/.local/opt/vaev/bin/vaev-webdriver \
           --test-type=reftest --log-wptreport ${{ runner.temp }}/wpt_report_${{ matrix.current-chunk }}.json \
           --this-chunk=${{ matrix.current-chunk }} \
           --total-chunks=${{ matrix.total-chunks }} \
