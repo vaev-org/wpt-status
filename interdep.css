@@ -1,88 +1,273 @@
-#report{
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(calc(var(--rows, 3) + 1), 0fr);
-    border: solid 1px #d1d1d1;
-    gap: 1px;
-    background: #d1d1d1;
-    margin-top: 8rem;
-    margin-right: 2rem;
+/* Props Interdependence page-specific styles */
+
+#toolbar .nav-link {
+    margin-left: auto;
 }
 
-#report > div{
-    padding: 0.1rem;
+#heatmapArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#controls {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0.5rem 1rem;
     background: #fff;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#controls label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+#controls input[type="text"] {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex: 1;
+}
+
+.zoom-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    z-index: 5;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.zoom-controls button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #555;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1rem;
-    height: 1rem;
+}
+
+.zoom-controls button:last-child {
+    border-bottom: none;
+}
+
+.zoom-controls button:hover {
+    background: #f0f0f0;
+}
+
+#stats {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 1rem;
     font-size: 0.8rem;
-}
-
-#report > div.desc{
-    background: #ededed;
-    width: 9rem !important;
-}
-
-#report > div.name{
-    background: #ede8fb;
-}
-
-div.name.top{
-    clip-path: xywh(0 -8.5rem 4rem 9.8rem);
-}
-
-div.name.left{
-    width: 9rem !important;
-}
-
-#report > div.item{
-    background-color: color-mix(in srgb,  var(--color1, white) calc(var(--compliance, 0)*2%), var(--color2, white));
-}
-
-.invisible{
-    opacity: 0.001;
+    color: #888;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
     pointer-events: none;
+    z-index: 5;
 }
 
-.label{
-    width: 10rem;
-    text-align: left;
+#heatmapContainer {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    padding: 1rem;
+    background: #fff;
+}
+
+#heatmap {
+    display: block;
+}
+
+/* Detail Panel (right sidebar) */
+#detailPanel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 360px;
+    height: 100vh;
+    background: #fff;
+    border-left: 1px solid #ddd;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.12);
+    z-index: 200;
     display: flex;
-    position: absolute;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+}
+
+#detailPanel.open {
+    transform: translateX(0);
+}
+
+#detailHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+}
+
+#detailHeader strong {
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-    background: #ede8fb;
-    padding: 0.1rem;
-    padding-left: 0.4rem;
-    height: 1rem;
-    border: 1px solid #bbb;
-    transform: translate(1.2rem, -4.2rem) rotate(-75deg);
 }
 
-.tooltip .tooltiptext {
-    visibility: hidden;
-    min-width: 80px;
-    width: 80px;
-    white-space: pre;
-    height: 3rem;
-    max-width: none;
-    background-color: black;
+#detailClose {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0 0.3rem;
+    line-height: 1;
+}
+
+#detailClose:hover {
+    color: #333;
+}
+
+#detailContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+}
+
+.detail-section {
+    padding: 0.4rem 1rem;
+}
+
+.detail-section h4 {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.detail-test-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.detail-test-list li {
+    padding: 0.25rem 0;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.detail-test-list li:last-child {
+    border-bottom: none;
+}
+
+.detail-test-list a {
+    color: #333;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.detail-test-list a:hover {
+    color: var(--blue);
+    text-decoration: underline;
+}
+
+.detail-test-list .status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+}
+
+.detail-test-list .status-dot.pass {
+    background: var(--green);
+}
+
+.detail-test-list .status-dot.fail {
+    background: var(--red);
+}
+
+.detail-summary {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: #555;
+    border-bottom: 1px solid #eee;
+}
+
+@media (max-width: 480px) {
+    #detailPanel {
+        width: 100%;
+    }
+}
+
+#tooltip {
+    display: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.9);
     color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0.8rem;
-    position: absolute;
-    transform: translate(calc(50% + 0.8rem), 0);
-    z-index: 2;
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 400px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transform: translate(0, -100%);
+    max-height: 50vh;
+    overflow-y: auto;
 }
 
-.tooltip:hover .tooltiptext:after {
-    width: 0.8rem;
-    height: 0.8rem;
-    position: absolute;
-    content: '';
-    background: black;
-    z-index: 1;
-    transform: translate(calc(-40px - 1rem), calc(-50% - 1.3rem)) rotate(45deg);
+
+
+@media (max-width: 768px) {
+    #heatmapArea {
+        flex-direction: column-reverse;
+    }
+
+    #controls {
+        gap: 0.8rem;
+        border-top: none;
+        border-bottom: 1px solid #ddd;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    #controls input[type="text"] {
+        width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    #controls label {
+        font-size: 0.8rem;
+    }
+
+    #controls input[type="text"] {
+        width: 120px;
+    }
 }

@@ -1,40 +1,80 @@
 <html>
+
 <head>
+    <meta charset="UTF-8">
     <title>Vaev | Dev's Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="base.css" />
     <link rel="stylesheet" href="index.css" />
-    <script src="index.js" type="module"></script>
+    <link rel="stylesheet" href="interdep.css" />
+    <script src="app.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
-<div class="pageContainer">
-    <div class="headline">
-        <img src="logo.webp" alt="Vaev's original logotype">
-        <p>You can find here the history of Vaev's WPT compliance, performance and different tools aimed at making the development easier.</p>
+    <div id="toolbar">
+        <button id="burgerBtn" aria-label="Menu">&#9776;</button>
+        <a href="./index.html" class="logo">
+            <img src="logo.webp" alt="Vaev">
+        </a>
+        <div id="viewTabs">
+            <button class="tab-btn active" data-view="chart">Test Results</button>
+            <button class="tab-btn" data-view="heatmap">CSS Properties</button>
+        </div>
     </div>
-    <div class="inline" style="width: 100%">
-        <div class="reportContainer">
-            <h2>List of available reports</h2>
-            <div class="legend">
-                <div>Compliance</div>
-                <div class="inline"><div class="circle red"></div> -> <div class="circle orange"></div>0% - 50%</div>
-                <div class="inline"><div class="circle orange"></div> -> <div class="circle green"></div>50% - 99.9%</div>
-                <div class="inline"><div class="circle blue"></div>100%</div>
+    <div id="sidebarOverlay"></div>
+
+    <div id="mainContent">
+        <aside id="sidebar">
+            <div class="legend" id="sidebarLegend">
+                <div id="gradientLegend">
+                    <span>0%</span>
+                    <div class="gradient"></div>
+                    <span>100%</span>
+                </div>
             </div>
             <div id="reports">
-                <div class="nav-item"><a class="nav-link" onclick="changeReport('wpt')">summary</a></div>
+                <div class="nav-item" data-report="wpt"><a class="nav-link" onclick="changeReport('wpt')">All Tests</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Chart View -->
+        <main id="chartArea">
+            <div id="chartWrapper">
+                <canvas id="myChart"></canvas>
+            </div>
+        </main>
+
+        <!-- Heatmap View -->
+        <div id="heatmapArea" style="display: none;">
+            <div id="heatmapContainer">
+                <canvas id="heatmap"></canvas>
+                <div class="zoom-controls">
+                    <button id="zoomIn">+</button>
+                    <button id="zoomOut">−</button>
+                    <button id="resetView">↺</button>
+                </div>
+                <span id="stats"></span>
+            </div>
+            <div id="controls">
+                <label>
+                    Search:
+                    <input type="text" id="searchInput" placeholder="display, flex, width...">
+                </label>
             </div>
         </div>
-        <canvas id="myChart" width="630" height="400"></canvas>
     </div>
 
-    <div class="footer">
-        <h2>Other tools</h2>
-        <div class="inline">
-            <a href="./propsInterdep.html">Properties interdependence</a>
+    <aside id="detailPanel">
+        <div id="detailHeader">
+            <strong id="detailTitle"></strong>
+            <button id="detailClose">&times;</button>
         </div>
-    </div>
-</div>
+        <div id="detailContent"></div>
+    </aside>
 
+    <div id="tooltip"></div>
 </body>
+
 </html>
