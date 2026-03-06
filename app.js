@@ -134,6 +134,9 @@ async function genReport(report) {
 function initChart(points) {
     const canvas = document.getElementById('myChart');
     const ctx = canvas.getContext('2d');
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridColor = isDark ? 'rgba(244,244,245,0.1)' : 'rgba(0,0,0,0.1)';
+    const textColor = isDark ? '#a1a1aa' : '#666';
 
     if (currentChart) {
         currentChart.destroy();
@@ -176,17 +179,22 @@ function initChart(points) {
                 y: {
                     beginAtZero: true,
                     stacked: true,
-                    title: { display: true, text: 'Passing / Failing WPTs' }
+                    title: { display: true, text: 'Passing / Failing WPTs', color: textColor },
+                    ticks: { color: textColor },
+                    grid: { color: gridColor }
                 },
                 x: {
-                    title: { display: true, text: 'Date' }
+                    title: { display: true, text: 'Date', color: textColor },
+                    ticks: { color: textColor },
+                    grid: { color: gridColor }
                 }
             },
             responsive: true,
             maintainAspectRatio: false,
             interaction: { mode: 'nearest', axis: 'x', intersect: false },
             plugins: {
-                tooltip: { callbacks: { footer: footer } }
+                tooltip: { callbacks: { footer: footer } },
+                legend: { labels: { color: textColor } }
             }
         }
     });
@@ -231,6 +239,86 @@ function setupHeatmapCanvas() {
     heatmapCanvas.addEventListener('mousemove', handleMouseMove);
     heatmapCanvas.addEventListener('click', handleClick);
     heatmapCanvas.addEventListener('wheel', handleWheel, { passive: false });
+
+    // Touch events for mobile panning and pinch-to-zoom
+    let touchStartX, touchStartY, touchStartOffsetX, touchStartOffsetY;
+    let lastPinchDist = null;
+    let isTouchPanning = false;
+    let touchMoved = false;
+    let touchStartTime = 0;
+
+    heatmapCanvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            isTouchPanning = true;
+            touchMoved = false;
+            touchStartTime = Date.now();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartOffsetX = offsetX;
+            touchStartOffsetY = offsetY;
+        } else if (e.touches.length === 2) {
+            isTouchPanning = false;
+            touchMoved = true;
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            lastPinchDist = Math.hypot(dx, dy);
+        }
+        e.preventDefault();
+    }, { passive: false });
+
+    heatmapCanvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1 && isTouchPanning) {
+            const dx = e.touches[0].clientX - touchStartX;
+            const dy = e.touches[0].clientY - touchStartY;
+
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                touchMoved = true;
+            }
+
+            offsetX = touchStartOffsetX + dx;
+            offsetY = touchStartOffsetY + dy;
+
+            if (filteredData) {
+                const minOffsetX = Math.min(0, heatmapCanvas.width - 120 - filteredData.rows.length * cellSize);
+                const minOffsetY = Math.min(0, heatmapCanvas.height - 100 - filteredData.rows.length * cellSize);
+                offsetX = Math.max(minOffsetX, Math.min(0, offsetX));
+                offsetY = Math.max(minOffsetY, Math.min(0, offsetY));
+            }
+            render();
+        } else if (e.touches.length === 2 && lastPinchDist !== null) {
+            touchMoved = true;
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const dist = Math.hypot(dx, dy);
+            const delta = dist - lastPinchDist;
+
+            if (Math.abs(delta) > 2) {
+                cellSize = Math.max(4, Math.min(40, cellSize + (delta > 0 ? 1 : -1)));
+                lastPinchDist = dist;
+                render();
+            }
+        }
+        e.preventDefault();
+    }, { passive: false });
+
+    heatmapCanvas.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+            lastPinchDist = null;
+        }
+        if (e.touches.length === 0) {
+            // Detect tap: no significant movement and short duration
+            if (!touchMoved && (Date.now() - touchStartTime) < 300) {
+                const fakeEvent = {
+                    clientX: touchStartX,
+                    clientY: touchStartY,
+                    getBoundingClientRect: undefined,
+                };
+                handleClick(fakeEvent);
+            }
+            isTouchPanning = false;
+            touchMoved = false;
+        }
+    });
 }
 
 function setupHeatmapControls() {
@@ -423,6 +511,12 @@ function updateStats() {
 function render() {
     if (!filteredData || !heatmapCtx || currentView !== 'heatmap') return;
 
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const bgColor = isDark ? '#09090b' : '#f5f5f5';
+    const surfaceColor = isDark ? '#18181b' : '#fff';
+    const textColor = isDark ? '#f4f4f5' : '#333';
+    const borderColor = isDark ? '#3f3f46' : '#ddd';
+
     const container = document.getElementById('heatmapContainer');
     const N = filteredData.rows.length;
     const labelWidth = 120;
@@ -431,7 +525,7 @@ function render() {
     heatmapCanvas.width = container.clientWidth;
     heatmapCanvas.height = container.clientHeight;
 
-    heatmapCtx.fillStyle = '#f5f5f5';
+    heatmapCtx.fillStyle = bgColor;
     heatmapCtx.fillRect(0, 0, heatmapCanvas.width, heatmapCanvas.height);
 
     for (let j = 0; j < N; j++) {
@@ -443,16 +537,16 @@ function render() {
             if (y + cellSize < labelHeight || y > heatmapCanvas.height) continue;
 
             const [passing, total] = filteredData.content[j][i];
-            heatmapCtx.fillStyle = getColor(passing, total);
+            heatmapCtx.fillStyle = getColor(passing, total, isDark);
             heatmapCtx.fillRect(Math.max(x, labelWidth), Math.max(y, labelHeight), cellSize, cellSize);
         }
     }
 
-    heatmapCtx.fillStyle = '#fff';
+    heatmapCtx.fillStyle = surfaceColor;
     heatmapCtx.fillRect(0, 0, labelWidth, heatmapCanvas.height);
     heatmapCtx.fillRect(0, 0, heatmapCanvas.width, labelHeight);
 
-    heatmapCtx.fillStyle = '#333';
+    heatmapCtx.fillStyle = textColor;
     heatmapCtx.font = '10px sans-serif';
     heatmapCtx.textAlign = 'right';
     heatmapCtx.textBaseline = 'middle';
@@ -485,7 +579,7 @@ function render() {
     }
     heatmapCtx.restore();
 
-    heatmapCtx.strokeStyle = '#ddd';
+    heatmapCtx.strokeStyle = borderColor;
     heatmapCtx.beginPath();
     heatmapCtx.moveTo(labelWidth, 0);
     heatmapCtx.lineTo(labelWidth, heatmapCanvas.height);
@@ -494,8 +588,8 @@ function render() {
     heatmapCtx.stroke();
 }
 
-function getColor(passing, total) {
-    if (total === 0) return '#f5f5f5';
+function getColor(passing, total, isDark) {
+    if (total === 0) return isDark ? '#09090b' : '#f5f5f5';
 
     const ratio = passing / total;
 
@@ -609,6 +703,7 @@ function handleClick(e) {
 
 function openDetailPanel(prop1, prop2, passing, total, passingIndices, failingIndices) {
     const panel = document.getElementById('detailPanel');
+    document.getElementById('detailOverlay').classList.add('open');
     const title = document.getElementById('detailTitle');
     const content = document.getElementById('detailContent');
     const pct = total > 0 ? ((passing / total) * 100).toFixed(1) : 'N/A';
@@ -647,6 +742,7 @@ function openDetailPanel(prop1, prop2, passing, total, passingIndices, failingIn
 
 function closeDetailPanel() {
     document.getElementById('detailPanel').classList.remove('open');
+    document.getElementById('detailOverlay').classList.remove('open');
 }
 
 function handleWheel(e) {
@@ -692,6 +788,33 @@ async function init() {
 
     // Detail panel close
     document.getElementById('detailClose').addEventListener('click', closeDetailPanel);
+    document.getElementById('detailOverlay').addEventListener('click', closeDetailPanel);
+
+    // Dark mode toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀';
+    }
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            themeToggle.textContent = '☾';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.textContent = '☀';
+        }
+        if (currentView === 'heatmap' && heatmapInitialized) {
+            render();
+        }
+        if (currentView === 'chart' && currentReport) {
+            changeReport(currentReport);
+        }
+    });
 
     // Setup tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
